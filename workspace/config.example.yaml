@@ -1,0 +1,49 @@
+llm:
+  api_base: https://api.deepseek.com
+  api_key: your-api-key-here
+  extra: {}
+  max_tokens: 16000
+  model: deepseek-v4-flash
+  provider: deepseek
+  temperature: 0.7
+
+history:
+  keep_recent_messages: 20
+  max_tokens: 200000
+  summary_max_tokens: 8000
+
+mcpServers:
+  gaode-map:
+    agent_managed: true
+    description: 高德地图 MCP 服务，通过智谱代理提供地理编码、天气、路线规划、周边搜索等地图能力。
+    enabled: true
+    type: sse
+    url: 
+  zhipu-web-search:
+    agent_managed: true
+    description: 智谱 Web 搜索，支持联网检索网页信息。
+    enabled: true
+    type: sse
+    url: 
+
+feishu:
+  allow_from: []
+  app_id: cli_xxx
+  app_secret: your-feishu-app-secret
+  enabled: true
+  group_policy: mention
+  streaming: false
+
+paths:
+  agents_dir: agents
+  skills_dir: skills
+
+tools:
+  builtin:
+    enabled: true
+  plugins:
+    enabled: true
+    paths:
+    - plugins
+
+default_agent: Beagle
