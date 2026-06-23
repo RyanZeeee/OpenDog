@@ -24,7 +24,7 @@ class AgentGuidanceTest(unittest.TestCase):
         self.assertEqual(session.pending_guidance, [])
         self.assertEqual(len(session.state.messages), 1)
         self.assertEqual(session.state.messages[0]["role"], "user")
-        self.assertIn("[当前任务引导]", session.state.messages[0]["content"])
+        self.assertIn("[Current Task Guidance]", session.state.messages[0]["content"])
         self.assertIn("改成黑白极简", session.state.messages[0]["content"])
 
     def test_consume_multiple_guidance_items_in_one_user_message(self) -> None:

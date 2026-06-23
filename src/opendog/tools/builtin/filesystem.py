@@ -7,14 +7,14 @@ from opendog.tools.base import tool
 
 @tool(
     name="read",
-    description="读取文本文件内容。可通过 offset 参数分段读取大文件。",
+    description="Read the contents of a text file. Use the offset parameter to read large files in chunks.",
     parameters={
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "要读取的文件路径。"},
+            "path": {"type": "string", "description": "Path of the file to read."},
             "offset": {
                 "type": "integer",
-                "description": "从第几个字符开始读（0-based）。默认 0 即从头读。",
+                "description": "Character offset to start reading from (0-based). Defaults to 0.",
             },
         },
         "required": ["path"],
@@ -38,16 +38,16 @@ async def read_file(path: str, session: Any, offset: int = 0) -> str:
 @tool(
     name="write",
     description=(
-        "把文本内容写入文件。如果文件不存在，会自动创建。"
-        "这是创建或覆盖文本文件的首选工具，支持多行和较长内容；"
-        "如果内容太长导致失败，先用本工具写第一段，再用 append 追加后续段；"
-        "不要改用 bash、Python 或 base64 写大段文件。"
+        "Write text content to a file, creating the file if it does not exist. "
+        "This is the preferred tool for creating or overwriting text files, including multiline and long content. "
+        "If the content is too large and the write fails, use this tool for the first chunk and append for later chunks. "
+        "Do not switch to bash, Python, or base64 to write large files."
     ),
     parameters={
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "要写入的文件路径。"},
-            "content": {"type": "string", "description": "要写入文件的文本内容。"},
+            "path": {"type": "string", "description": "Path of the file to write."},
+            "content": {"type": "string", "description": "Text content to write into the file."},
         },
         "required": ["path", "content"],
     },
@@ -67,14 +67,14 @@ async def write_file(path: str, content: str, session: Any) -> str:
 @tool(
     name="append",
     description=(
-        "把文本内容追加到文件末尾。用于长内容分段写入：write 写第一段，append 写后续段。"
-        "如果文件不存在，会自动创建。"
+        "Append text content to the end of a file. Use this for chunked long-file writing: write the first chunk with write, then append later chunks. "
+        "Creates the file if it does not exist."
     ),
     parameters={
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "要追加内容的文件路径。"},
-            "content": {"type": "string", "description": "要追加到文件末尾的文本内容。"},
+            "path": {"type": "string", "description": "Path of the file to append to."},
+            "content": {"type": "string", "description": "Text content to append to the end of the file."},
         },
         "required": ["path", "content"],
     },
@@ -94,13 +94,13 @@ async def append_file(path: str, content: str, session: Any) -> str:
 
 @tool(
     name="edit",
-    description="替换文本文件中的内容。",
+    description="Replace content in a text file.",
     parameters={
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "要编辑的文件路径。"},
-            "old_text": {"type": "string", "description": "需要被替换的原文本。"},
-            "new_text": {"type": "string", "description": "替换后的新文本。"},
+            "path": {"type": "string", "description": "Path of the file to edit."},
+            "old_text": {"type": "string", "description": "Exact original text to replace."},
+            "new_text": {"type": "string", "description": "Replacement text."},
         },
         "required": ["path", "old_text", "new_text"],
     },
@@ -124,26 +124,26 @@ async def edit_file(path: str, old_text: str, new_text: str, session: Any) -> st
 @tool(
     name="multiedit",
     description=(
-        "对同一个文本文件按顺序执行多处替换。适合一次修改多个位置；"
-        "如果任意 old_text 找不到，整个文件不会被写入。"
+        "Apply multiple replacements to the same text file in order. Use this when editing several locations at once. "
+        "If any old_text is not found, the file will not be written."
     ),
     parameters={
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "要编辑的文件路径。"},
+            "path": {"type": "string", "description": "Path of the file to edit."},
             "edits": {
                 "type": "array",
-                "description": "按顺序执行的替换列表。",
+                "description": "Ordered list of replacements to apply.",
                 "items": {
                     "type": "object",
                     "properties": {
                         "old_text": {
                             "type": "string",
-                            "description": "需要被替换的原文本。",
+                            "description": "Exact original text to replace.",
                         },
                         "new_text": {
                             "type": "string",
-                            "description": "替换后的新文本。",
+                            "description": "Replacement text.",
                         },
                     },
                     "required": ["old_text", "new_text"],

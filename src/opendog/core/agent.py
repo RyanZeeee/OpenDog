@@ -67,7 +67,7 @@ class Agent:
         )
 
 
-OVERFLOW_MESSAGE = "上下文超限，请使用 /compact 压缩后重试此消息。"
+OVERFLOW_MESSAGE = "Context limit exceeded. Please run /compact, then retry this message."
 
 
 @dataclass
@@ -101,47 +101,47 @@ class AgentSession:
     def build_system_prompt(self) -> str:
         runtime_section = (
             "## Runtime Paths\n\n"
-            f"- 工作目录：{self.agent.working_dir}\n"
-            f"- opendog workspace 配置目录：{self.agent.workspace_root}\n\n"
-            "文件工具和 shell 命令默认在工作目录中运行。\n"
-            "workspace 只是 opendog 的配置来源；"
-            "MCP 管理请使用 mcp_list_servers、mcp_start_server、mcp_stop_server。"
+            f"- Working directory: {self.agent.working_dir}\n"
+            f"- opendog workspace configuration directory: {self.agent.workspace_root}\n\n"
+            "File tools and shell commands run in the working directory by default.\n"
+            "The workspace is only the source of opendog configuration. "
+            "For MCP management, use mcp_list_servers, mcp_start_server, and mcp_stop_server."
         )
         tool_discipline_section = (
             "## Tool Use Discipline\n\n"
-            "### 文件写入\n"
-            "创建/覆盖文件用 write；当文件内容过长导致写入失败时可以分段，第一段用 write，后续用 append，"
-            "不要改用 bash、Python、base64 写文件。\n\n"
-            "### 文件修改\n"
-            "修改文件时，单处替换用 edit，多处替换用 multiedit。\n\n"
-            "### 写入后检验\n"
-            "写完长文件后，必须调用工具检查完整性和明显错误：内容是否缺段、顺序是否正确、"
-            "语法结构是否闭合、是否混入不该显示的代码或标记。\n\n"
-            "### 输出目录\n"
-            "用户要创建的最终产物必须输出到工作目录，除非用户明确指定其它路径。"
-            ".opendog_tmp 只放临时脚本、临时依赖和缓存，不放最终产物。"
-            "临时脚本生成最终产物时，必须使用工作目录内的绝对输出路径，或由命令参数传入输出路径；"
-            "不要在脚本里用 ../ 或 ../../ 推算最终产物位置。\n\n"
-            "### 路径清晰性\n"
-            "所有工具参数和 shell 命令中的路径都必须清晰、可解析。"
-            "优先使用相对于工作目录的路径；需要绝对路径时，直接写完整绝对路径。"
-            "路径包含空格时，必须用双引号包住完整路径；不要用反斜杠转义空格。"
-            "不要用 $HOME、${HOME}、~、$PWD、${PWD} 代替关键路径，"
-            "不要把同一个路径拆成多段拼接。路径不清晰会被安全边界拒绝。\n\n"
-            "### 项目外操作\n"
-            "除非用户明确要求读取、修改或删除工作目录外的具体位置，否则不要主动访问项目外路径。"
-            "如果确实需要项目外操作，先确认用户指令中已经明确给出该位置或意图，再调用工具触发权限申请。"
-            "如果项目外操作被用户拒绝或者超时自动拒绝，禁止换路径、换命令或反复申请；"
-            "应停止该操作，向用户说明被拒绝，并确认用户是否真的要对项目外位置继续操作。\n\n"
-            "### 依赖安装\n"
-            "所有的代码依赖不要全局安装；npm 依赖优先安装到 .opendog_tmp。"
-            "如果 skill 示例写的环境依赖是安装在全局的，不要照抄，改成本地临时项目安装，不要切换到 /tmp。\n"
-            "安装代码依赖时优先使用国内镜像；镜像不可用或包不存在时再切换其它镜像或者回退官方源。"
-            "如果同类安装命令超时或失败，不要盲目重复超过 2 次，应根据错误换源或明确说明失败原因。\n\n"
-            "### 内容准确性\n"
-            "历史摘要中的省略内容不是完整正文；需要文件细节时，重新用 read 读取真实文件。\n\n"
-            "### Bash 使用边界\n"
-            "bash 只用于运行、构建、转换、验证等命令，不用于写大段文件。"
+            "### File Writing\n"
+            "Use write to create or overwrite files. If the content is too large and the write fails, split it into chunks: "
+            "use write for the first chunk and append for later chunks. Do not switch to bash, Python, or base64 for file writing.\n\n"
+            "### File Editing\n"
+            "Use edit for one replacement in a file, and multiedit for multiple replacements in the same file.\n\n"
+            "### Verification After Writing\n"
+            "After writing a long file, you must call tools to check completeness and obvious errors: missing sections, incorrect order, "
+            "unclosed syntax structures, or accidental code/markup that should not be displayed.\n\n"
+            "### Output Directory\n"
+            "Final artifacts requested by the user must be written to the working directory unless the user explicitly specifies another path. "
+            ".opendog_tmp is only for temporary scripts, temporary dependencies, and caches, not final artifacts. "
+            "When temporary scripts generate final artifacts, pass an absolute output path inside the working directory or provide the output path as a command argument. "
+            "Do not infer final artifact locations with ../ or ../../ inside scripts.\n\n"
+            "### Path Clarity\n"
+            "All tool arguments and shell command paths must be clear and resolvable. "
+            "Prefer paths relative to the working directory. When an absolute path is required, write the complete absolute path directly. "
+            "If a path contains spaces, wrap the full path in double quotes; do not use backslash-escaped spaces. "
+            "Do not use $HOME, ${HOME}, ~, $PWD, or ${PWD} for important paths, and do not split one path into multiple concatenated parts. "
+            "Unclear paths will be rejected by the safety boundary.\n\n"
+            "### Operations Outside The Project\n"
+            "Do not proactively access paths outside the working directory unless the user explicitly asks you to read, modify, or delete a specific external location. "
+            "If an external operation is truly necessary, first ensure the user's instruction clearly names that location or intent, then call the tool so the permission request can be shown. "
+            "If the user rejects the external operation or it times out as denied, do not try another path, another command, or repeated requests. "
+            "Stop that operation, explain that it was denied, and confirm whether the user really wants to continue with the external location.\n\n"
+            "### Dependency Installation\n"
+            "Do not install code dependencies globally. Prefer installing npm dependencies into .opendog_tmp. "
+            "If a skill example installs dependencies globally, do not copy that pattern; create a local temporary project instead, and do not switch to /tmp. "
+            "Prefer domestic mirrors when installing code dependencies. If a mirror is unavailable or the package does not exist, switch mirrors or fall back to the official source. "
+            "If similar installation commands time out or fail, do not retry blindly more than twice; change the source based on the error or clearly explain the failure.\n\n"
+            "### Content Accuracy\n"
+            "Omitted content in history summaries is not the full original text. When file details are needed, read the real file again with the read tool.\n\n"
+            "### Bash Boundary\n"
+            "Use bash only for running, building, converting, and verifying. Do not use bash to write large files."
         )
         skill_section = self.skills.build_prompt_section()
         sections = [
@@ -173,11 +173,13 @@ class AgentSession:
             return ""
         return (
             "## Active Skill\n\n"
-            f"当前已加载 skill：{self.active_skill.name}\n"
-            f"SKILL.md：{self.active_skill.path}\n\n"
-            "SKILL.md 中出现的相对路径，都必须相对于这个 SKILL.md 所在目录解析，"
-            "不要改写成 workspace 根目录下的 scripts 路径。\n"
-            "继续按刚读取的 SKILL.md 执行。优先在SKILL中寻找对应的工具和文件。系统工具和依赖缺失时立刻在项目本地.opendog_tmp安装。安装后严格按照SKILL.md给出的方法和工具在项目本地执行\n"
+            f"Loaded skill: {self.active_skill.name}\n"
+            f"SKILL.md: {self.active_skill.path}\n\n"
+            "Resolve all relative paths mentioned in SKILL.md relative to the directory containing that SKILL.md. "
+            "Do not rewrite them as scripts paths under the workspace root.\n"
+            "Continue following the SKILL.md you just read. Prefer tools and files provided by the skill. "
+            "If required system tools or dependencies are missing, install them immediately into the project's local .opendog_tmp directory. "
+            "After installation, execute the method and tools specified by SKILL.md locally in the project.\n"
         )
 
     def activate_skill_from_path(self, path: Path) -> None:
@@ -201,15 +203,15 @@ class AgentSession:
         self.pending_guidance.clear()
         if len(guidance_items) == 1:
             content = (
-                "[当前任务引导]\n"
-                "用户在当前任务执行期间追加了以下引导，请应用到当前任务中：\n"
+                "[Current Task Guidance]\n"
+                "The user added the following guidance while the current task was running. Apply it to the current task:\n"
                 f"{guidance_items[0]}"
             )
         else:
             joined = "\n".join(f"- {item}" for item in guidance_items)
             content = (
-                "[当前任务引导]\n"
-                "用户在当前任务执行期间追加了以下引导，请按顺序应用到当前任务中：\n"
+                "[Current Task Guidance]\n"
+                "The user added the following guidance while the current task was running. Apply the items in order:\n"
                 f"{joined}"
             )
         self.state.add_message({"role": "user", "content": content})
@@ -265,7 +267,7 @@ class AgentSession:
                 continue
 
             if llm_response.stop_reason == "content_filter":
-                return llm_response.content or "抱歉，我无法回答这个请求。"
+                return llm_response.content or "Sorry, I cannot answer this request."
 
             return llm_response.content
 
@@ -347,7 +349,7 @@ class AgentSession:
 
                 if stop_reason == "content_filter":
                     if not content:
-                        yield {"type": "text", "content": "抱歉，我无法回答这个请求。"}
+                        yield {"type": "text", "content": "Sorry, I cannot answer this request."}
                     return
 
                 return
@@ -468,9 +470,9 @@ class AgentSession:
             if len(result) > MAX_TOOL_RESULT_CHARS:
                 result = (
                     result[:MAX_TOOL_RESULT_CHARS]
-                    + f"\n\n[结果已截断，原结果共 {len(result)} 字符"
-                    + f"（单次工具结果上限 {MAX_TOOL_RESULT_CHARS} 字符）。"
-                    + "如需完整内容，可使用 read 工具配合 offset 参数分段读取。]"
+                    + f"\n\n[Result truncated. Original result length: {len(result)} characters "
+                    + f"(single tool result limit: {MAX_TOOL_RESULT_CHARS} characters). "
+                    + "Use the read tool with the offset parameter to read the full content in chunks if needed.]"
                 )
             return result
         except Exception as exc:
@@ -565,9 +567,10 @@ class AgentSession:
 
     def permission_denied_message(self) -> str:
         return (
-            "用户已拒绝该操作：由于路径超出了项目边界，或者指令中路径不清晰，"
-            "本次工具调用被安全边界拒绝。不要换路径、换命令或反复申请；"
-            "请先向用户确认准确路径和操作意图。"
+            "The user denied this operation: the path is outside the project boundary, "
+            "or the instruction contains an unclear path. The safety boundary rejected this tool call. "
+            "Do not try another path, another command, or repeated requests. "
+            "First confirm the exact path and intended operation with the user."
         )
 
     async def request_permission(self, request: PermissionRequest) -> PermissionScope:

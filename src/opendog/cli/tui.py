@@ -155,7 +155,11 @@ class TuiChatLoop:
             elif role == "assistant":
                 content = msg.get("content", "")
                 # 跳过纯摘要消息（压缩产物，不显示在界面上）
-                if isinstance(content, str) and content and not content.startswith("[opendog 历史摘要]"):
+                is_summary = isinstance(content, str) and (
+                    content.startswith("[opendog History Summary]")
+                    or content.startswith("[opendog 历史摘要]")
+                )
+                if isinstance(content, str) and content and not is_summary:
                     result.append(ChatMessage("assistant", content))
             # tool 消息不直接显示
         return result

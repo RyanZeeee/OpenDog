@@ -7,7 +7,7 @@ from opendog.tools.base import tool
 
 @tool(
     name="list_tools",
-    description="按来源分组查看当前可用工具，适合回答用户关于工具能力的问题。",
+    description="List currently available tools grouped by source. Useful when answering questions about tool capabilities.",
     parameters={"type": "object", "properties": {}},
 )
 async def list_tools(session: Any) -> str:

@@ -1,6 +1,6 @@
 ---
 name: cron-ops
-description: "当用户想创建、查看、修改、启用、停用、删除 opendog 定时任务时使用这个技能。触发词包括：定时任务、cron、CRON.md、每天/每周/每小时到点执行、提醒我、到某个时间自动做事、自动推送到飞书、取消定时任务、查看有哪些定时任务。这个技能只说明如何用现有文件工具管理 workspace/crons。"
+description: "Use this skill when the user wants to create, view, modify, enable, disable, or delete opendog scheduled tasks. Triggers include scheduled task, cron, CRON.md, run daily/weekly/hourly, remind me, automatically do something at a specific time, automatically push to Feishu, cancel a scheduled task, or list existing scheduled tasks. This skill only explains how to manage workspace/crons with the existing file tools."
 ---
 
 # Cron 定时任务管理

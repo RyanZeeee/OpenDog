@@ -134,20 +134,20 @@ class SkillRegistry:
         lines = [
             "## Available Skills",
             "",
-            "下面是当前会话可用的 skill 说明书。Skill 不是工具；它是告诉你如何使用已有工具的操作指南。",
+            "The following skill manuals are available in the current session. A skill is not a tool; it is an operating guide for using existing tools.",
             "",
-            "每次收到用户请求后，先快速检查这份列表：",
-            "1. 如果用户请求明显匹配某个 skill 的 name 或 description，第一步必须调用 read 工具读取该 skill 的 SKILL.md。",
-            "2. 在读取匹配的 SKILL.md 之前，不要调用 write、edit 或 bash 去完成任务。",
-            "3. 读取 SKILL.md 后，按其中说明继续使用 read、write、edit、bash 等已有工具。",
-            "4. 如果没有明显匹配的 skill，才直接使用普通工具或直接回答。",
+            "After each user request, quickly check this list first:",
+            "1. If the request clearly matches a skill name or description, your first step must be to call the read tool on that skill's SKILL.md.",
+            "2. Before reading the matching SKILL.md, do not call write, edit, or bash to complete the task.",
+            "3. After reading SKILL.md, continue with existing tools such as read, write, edit, and bash according to its instructions.",
+            "4. Only use ordinary tools directly, or answer directly, when there is no clear matching skill.",
             "",
-            "不要默认读取全部 skill，只读取当前任务明显需要的那一个。",
+            "Do not read every skill by default. Read only the one that is clearly needed for the current task.",
             "",
         ]
         for skill in self._skills.values():
             lines.append(
-                f"- {skill.name}：{skill.description}\n"
+                f"- {skill.name}: {skill.description}\n"
                 f"  path: {skill.path}"
             )
         return "\n".join(lines)

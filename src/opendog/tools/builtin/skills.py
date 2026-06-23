@@ -7,7 +7,7 @@ from opendog.tools.base import tool
 
 @tool(
     name="list_skills",
-    description="查看当前会话可用的技能列表。",
+    description="List the skills available in the current session.",
     parameters={"type": "object", "properties": {}},
 )
 async def list_skills(session: Any) -> str:

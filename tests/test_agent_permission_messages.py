@@ -26,9 +26,9 @@ class AgentPermissionMessageTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(allowed)
         self.assertEqual(extra_roots, [])
         self.assertFalse(include_user_home)
-        self.assertIn("路径超出了项目边界", reason)
-        self.assertIn("路径不清晰", reason)
-        self.assertIn("不要换路径、换命令或反复申请", reason)
+        self.assertIn("outside the project boundary", reason)
+        self.assertIn("unclear path", reason)
+        self.assertIn("Do not try another path", reason)
 
 
 if __name__ == "__main__":

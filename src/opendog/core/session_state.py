@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 MAX_HISTORY_TOKENS = 200000
 KEEP_RECENT_MESSAGES = 20
 SUMMARY_MAX_TOKENS = 8000
-SUMMARY_HEADER = "[opendog 历史摘要]"
+SUMMARY_HEADER = "[opendog History Summary]"
+LEGACY_SUMMARY_HEADER = "[opendog 历史摘要]"
 
 
 class SessionState:
@@ -156,7 +157,10 @@ class SessionState:
             role = message.get("role", "")
             content = self.message_content_text(message)
 
-            if role == "assistant" and content.startswith(SUMMARY_HEADER):
+            if role == "assistant" and (
+                content.startswith(SUMMARY_HEADER)
+                or content.startswith(LEGACY_SUMMARY_HEADER)
+            ):
                 previous_summaries.append(content)
                 continue
 
@@ -180,12 +184,13 @@ class SessionState:
 
         lines = [
             SUMMARY_HEADER,
-            "旧对话已压缩，省略了大段正文和工具参数；需要文件细节时请重新使用 read 读取真实文件。",
+            "Older conversation history has been compacted. Large message bodies and tool arguments were omitted. "
+            "When file details are needed, use the read tool to read the real file again.",
         ]
-        self.extend_section(lines, "重要错误", errors)
-        self.extend_section(lines, "用户请求", user_requests)
-        self.extend_section(lines, "工具和文件线索", tool_events)
-        self.extend_section(lines, "上一段摘要", previous_summaries)
+        self.extend_section(lines, "Important Errors", errors)
+        self.extend_section(lines, "User Requests", user_requests)
+        self.extend_section(lines, "Tool And File Clues", tool_events)
+        self.extend_section(lines, "Previous Summaries", previous_summaries)
 
         return self.truncate_to_estimated_tokens("\n".join(lines), summary_max_tokens)
 
@@ -195,8 +200,8 @@ class SessionState:
         arguments_text = function.get("arguments", "") or ""
         path = self.extract_path_from_json(arguments_text)
         if path:
-            return f"- 调用工具 {name}，目标：{path}"
-        return f"- 调用工具 {name}"
+            return f"- Called tool {name}; target: {path}"
+        return f"- Called tool {name}"
 
     def describe_tool_result(self, content: str) -> str:
         data = self.try_json_loads(content)
@@ -205,15 +210,15 @@ class SessionState:
             operation = data.get("operation")
             ok = data.get("ok")
             if path:
-                prefix = "工具结果"
+                prefix = "Tool result"
                 if operation:
                     prefix += f" {operation}"
                 if ok is False:
-                    prefix += " 失败"
-                return f"- {prefix}：{path}"
+                    prefix += " failed"
+                return f"- {prefix}: {path}"
         path = self.extract_path_from_text(content)
         if path:
-            return f"- 工具结果提到路径：{path}"
+            return f"- Tool result mentioned path: {path}"
         return ""
 
     def extract_path_from_json(self, text: str) -> str:
@@ -277,7 +282,7 @@ class SessionState:
                 break
             output.append(char)
             current_tokens += char_tokens
-        return "".join(output).rstrip() + "\n[摘要已截断]"
+        return "".join(output).rstrip() + "\n[Summary truncated]"
 
     def preview(self, text: str, max_chars: int) -> str:
         clean = re.sub(r"\s+", " ", text).strip()

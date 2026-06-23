@@ -169,7 +169,7 @@ class MCPManager:
 
         return FunctionTool(
             name="mcp_list_servers",
-            description="查看配置中可用的 MCP 服务器、运行状态，以及已暴露的工具。",
+            description="List configured MCP servers, their running status, and the tools they expose.",
             parameters={"type": "object", "properties": {}},
             function=list_servers,
         )
@@ -180,13 +180,13 @@ class MCPManager:
 
         return FunctionTool(
             name="mcp_start_server",
-            description="启动一个配置中允许 Agent 管理的 MCP 服务器。",
+            description="Start a configured MCP server that is allowed to be managed by the agent.",
             parameters={
                 "type": "object",
                 "properties": {
                     "server_name": {
                         "type": "string",
-                        "description": "要启动的 MCP 服务器名称。",
+                        "description": "Name of the MCP server to start.",
                     }
                 },
                 "required": ["server_name"],
@@ -200,13 +200,13 @@ class MCPManager:
 
         return FunctionTool(
             name="mcp_stop_server",
-            description="关闭一个配置中允许 Agent 管理的 MCP 服务器，并注销它暴露的工具。",
+            description="Stop a configured MCP server that is allowed to be managed by the agent, and unregister the tools it exposes.",
             parameters={
                 "type": "object",
                 "properties": {
                     "server_name": {
                         "type": "string",
-                        "description": "要关闭的 MCP 服务器名称。",
+                        "description": "Name of the MCP server to stop.",
                     }
                 },
                 "required": ["server_name"],

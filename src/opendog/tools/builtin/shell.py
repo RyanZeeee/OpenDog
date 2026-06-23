@@ -8,11 +8,11 @@ from opendog.tools.base import tool
 
 @tool(
     name="bash",
-    description="执行一条 bash 命令，并返回 stdout、stderr 和退出码。",
+    description="Run one bash command and return stdout, stderr, and the exit code.",
     parameters={
         "type": "object",
         "properties": {
-            "command": {"type": "string", "description": "要执行的 bash 命令。"},
+            "command": {"type": "string", "description": "Bash command to run."},
         },
         "required": ["command"],
     },
